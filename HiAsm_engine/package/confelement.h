@@ -76,49 +76,8 @@ private:
     void parsePoints(const QStringList &list);
 
 public:
-    QString getName() const;
-    void setName(const QString &name);
-
-    QString getVersion() const;
-    void setVersion(const QString &version);
-
-    QString getAuthor() const;
-    void setAuthor(const QString &author);
-
-    QString getMail() const;
-    void setMail(const QString &mail);
-
-    ElementClass getClass() const;
-    void setClass(const ElementClass eclass);
-
-    QStringList getInherits() const;
-    void setInherits(const QStringList &inherit);
-
-    QString getSub() const;
-    void setSub(const QString &sub);
-
-    QString getInfo() const;
-    void setInfo(const QString &info);
-
-    QString getPropIcon() const;
-    void setPropIcon(const QString &propIcon);
-
-    QString getView() const;
-    void setView(const QString &view);
-
-    QString getTab() const;
-    void setTab(const QString &tab);
-
-    QString getInterfaces() const;
-    void setInterfaces(const QString &interfaces);
-
-    QString getEditClass() const;
-    void setEditClass(const QString &editClass);
+    QString getName() { return m_name; }
 
     //Inherits
     void addInheritElements(Package *pack);
-
-    PropConfList getProperties() const;
-    PointConfList getPoints() const;
-    PointConfList getHiddenPoints() const;
 };

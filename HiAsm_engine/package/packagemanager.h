@@ -10,16 +10,20 @@
 //Qt
 #include <QtCore>
 
-class PackageManager : public QObject {
+class PackageManager : public QObject
+{
+    //constants...
+public:
+    const QString c_PACKAGES_DIR = "packages";
 
+    //private variables
 private:
-    const QString m_packagesDir = "packages";
-    QString m_pathPackages;
     Packages m_packages;
 
 public:
     explicit PackageManager(QObject *parent = 0);
 
 public:
-    Package *getPackage(const QString &namePack);
+    QString getPackagesPath();
+    Package *getPackage(const QString &packName);
 };
