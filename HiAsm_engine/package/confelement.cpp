@@ -2,7 +2,7 @@
 #include "confelement.h"
 #include "package.h"
 #include "cgt/CGTShare.h"
-#include "core/valuetypes.h"
+#include "core/types.h"
 
 //STL
 

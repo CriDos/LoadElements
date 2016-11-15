@@ -1,5 +1,5 @@
 ﻿//Project
-#include "value.h"
+#include "types.h"
 #include "cgt/CGTShare.h"
 
 //STL
