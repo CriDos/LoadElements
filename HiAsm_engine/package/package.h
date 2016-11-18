@@ -13,6 +13,8 @@
 
 class Package : public QObject
 {
+    Q_OBJECT
+
 private:
     const QString c_INFO_FILE_NAME = "package";
     const QString c_CONF_DIR = "conf";
@@ -36,8 +38,8 @@ private:
     //Project
     ProjectList m_projectList; //Массив проектов
 
-    //Compiler
-    ConfElementList m_confElementList; //Массив компиляторов
+    //Elements
+    ConfElementList m_confElementList; //Массив элементов
 
 public:
     explicit Package(const QString &packagePath, QObject *parent = 0);
