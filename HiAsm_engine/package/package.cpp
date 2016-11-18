@@ -17,33 +17,29 @@ Package::Package(const QString &packagePath, QObject *parent)
     //!!! Назначение путей !!!
 
     //Задаём путь к файлу информации о пакете
-    m_packageFileInfo = m_packagePath + QDir::separator() + PackageInfo::INFO_FILE_NAME;
+    m_packageFileInfo = m_packagePath + QDir::separator() + c_INFO_FILE_NAME;
     if (!QFile::exists(m_packageFileInfo)) {
-        setSuccess(false);
         return;
     }
 
     //Задаём путь к папке с элементами
-    m_confPath = m_packagePath + QDir::separator() + PackageInfo::CONF_DIR;
+    m_confPath = m_packagePath + QDir::separator() + c_CONF_DIR;
 
     //!!! Загружаем информацию о пакете/элементах !!!
 
     //Если не удалось по каким либо причинам прочитать информацию о пакете
     if (!loadPackageInfo()) {
-        setSuccess(false);
         return;
     }
 
     //Если не удалось найти и загрузить информацию об элементах
     if (!loadElements()) {
-        setSuccess(false);
         return;
     }
 
     //Добавляем информацию из наследуемых элементов
     addInheritElements();
-
-    setSuccess(true);
+    m_isSuccess = true;
 }
 
 //ru Получаем информацию об пакете и его проектах
@@ -215,16 +211,6 @@ void Package::addInheritElements()
     for (ConfElement *conf : m_confElementList) {
         conf->addInheritElements(this);
     }
-}
-
-bool Package::getSuccess() const
-{
-    return m_success;
-}
-
-void Package::setSuccess(bool success)
-{
-    m_success = success;
 }
 
 ConfElement *Package::getElementByName(const QString &name)

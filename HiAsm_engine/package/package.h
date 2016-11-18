@@ -9,18 +9,14 @@
 //Native
 
 //Qt
-#include <QtCore>
-
-namespace PackageInfo
-{
-static const QString INFO_FILE_NAME = "package";
-static const QString CONF_DIR = "conf";
-static const QString ICON_DIR = "icon";
-}
+#include <QObject>
 
 class Package : public QObject
 {
-    Q_OBJECT
+private:
+    const QString c_INFO_FILE_NAME = "package";
+    const QString c_CONF_DIR = "conf";
+    const QString c_ICON_DIR = "icon";
 
 private:
     //Информация о пакете
@@ -32,7 +28,7 @@ private:
     QString m_description;      //Полное описание пакета
     bool m_visible = true;      //Видимость пакета
     bool m_base = false;        //Базовый пакет
-    bool m_success = false;     //Информация успешно загружена
+    bool m_isSuccess = false;   //Информация успешно загружена
 
     //Compiler
     CompilerList m_compilerList; //Массив компиляторов
@@ -52,9 +48,6 @@ private:
     void addInheritElements();
 
 public:
-    bool getSuccess() const;
-    void setSuccess(bool success);
-
-    //Element
+    bool isSuccess() const { return m_isSuccess; }
     ConfElement *getElementByName(const QString &name);
 };

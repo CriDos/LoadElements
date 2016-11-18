@@ -25,7 +25,7 @@ Package *PackageManager::getPackage(const QString &packName)
         return m_packages[packName];
 
     Package *pack = new Package(getPackagesPath() + QDir::separator() + packName);
-    if (pack->getSuccess()) {
+    if (pack->isSuccess()) {
         m_packages.insert(packName, pack);
         return pack;
     } else {
