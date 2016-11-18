@@ -10,10 +10,9 @@
 #include <QtCore>
 
 class ConfElement;
-typedef QSharedPointer<ConfElement> SharedConfElement;
-typedef QList<SharedConfElement> ConfElementList;
+typedef QVector<ConfElement *> ConfElementList;
 
-class ConfElement
+class ConfElement : public QObject
 {
 private:
     enum TypeSection {
@@ -22,13 +21,15 @@ private:
         ts_types,
         ts_edit,
         ts_properties,
-        ts_points,
+        ts_points
     };
 
 private:
     //Self
     QString m_pathConf;
     QString m_name;
+    bool m_isSuccess = false;
+
     //QIcon m_icon;
 
     //Inherited
@@ -64,7 +65,7 @@ private:
     PointConfList m_hiddenPointList;
 
 public:
-    explicit ConfElement(const QString &pathConf);
+    explicit ConfElement(const QString &pathConf, QObject *parent);
 
 private:
     void initConfElement();
@@ -76,8 +77,9 @@ private:
     void parsePoints(const QStringList &list);
 
 public:
-    QString getName() { return m_name; }
+    QString getName() const { return m_name; }
 
     //Inherits
     void addInheritElements(Package *pack);
+    bool isSuccess() const { return m_isSuccess; }
 };

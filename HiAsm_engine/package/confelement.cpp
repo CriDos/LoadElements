@@ -10,17 +10,9 @@
 
 //Qt
 
-void ConfElement::addInheritElements(Package *pack)
-{
-    for (const QString &name : m_inherit) {
-        SharedConfElement e = pack->getElementByName(name);
-        if (!e.isNull() && !m_inheritList.contains(e))
-            m_inheritList.append(e);
-    }
-}
-
-ConfElement::ConfElement(const QString &pathConf)
-    : m_pathConf(pathConf)
+ConfElement::ConfElement(const QString &pathConf, QObject *parent)
+    : QObject(parent)
+    , m_pathConf(pathConf)
 {
     initConfElement();
     loadConf();
@@ -440,5 +432,14 @@ void ConfElement::parsePoints(const QStringList &list)
             else
                 desc += c; //Описание точки
         }
+    }
+}
+
+void ConfElement::addInheritElements(Package *pack)
+{
+    for (const QString &name : m_inherit) {
+        ConfElement *e = pack->getElementByName(name);
+        if (e && !m_inheritList.contains(e))
+            m_inheritList.append(e);
     }
 }

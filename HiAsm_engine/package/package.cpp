@@ -201,7 +201,10 @@ bool Package::loadElements()
     }
 
     for (const QFileInfo &element : listElements) {
-        m_confElementList << SharedConfElement::create(element.filePath());
+        ConfElement *e = new ConfElement(element.filePath(), this);
+        if (e->isSuccess()) {
+            m_confElementList << e;
+        }
     }
 
     return true;
@@ -209,7 +212,7 @@ bool Package::loadElements()
 
 void Package::addInheritElements()
 {
-    for (SharedConfElement &conf : m_confElementList) {
+    for (ConfElement *conf : m_confElementList) {
         conf->addInheritElements(this);
     }
 }
@@ -224,13 +227,13 @@ void Package::setSuccess(bool success)
     m_success = success;
 }
 
-SharedConfElement Package::getElementByName(const QString &name)
+ConfElement *Package::getElementByName(const QString &name)
 {
-    for (const SharedConfElement conf : m_confElementList) {
+    for (ConfElement *conf : m_confElementList) {
         if (QString::compare(conf->getName(), name, Qt::CaseInsensitive) == 0) {
             return conf;
         }
     }
 
-    return SharedConfElement();
+    return nullptr;
 }
