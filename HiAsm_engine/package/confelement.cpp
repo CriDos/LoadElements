@@ -14,14 +14,17 @@ ConfElement::ConfElement(const QString &pathConf, QObject *parent)
     : QObject(parent)
     , m_pathConf(pathConf)
 {
-    initConfElement();
-    loadConf();
-}
-
-void ConfElement::initConfElement()
-{
     QFileInfo file(m_pathConf);
     m_name = file.baseName();
+}
+
+void ConfElement::loadInheritElements()
+{
+    //for (const QString &name : m_inherit) {
+    //    ConfElement *e = pack->getElementByName(name);
+    //    if (e && !m_inheritList.contains(e))
+    //        m_inheritList.append(e);
+    //}
 }
 
 void ConfElement::loadConf()
@@ -94,18 +97,8 @@ void ConfElement::loadConf()
 
     parseAbout(secAbouts);
     parseTypes(secTypes);
-    parsePoints(secPoints);
     parseProperties(secProperties);
-
-}
-
-void ConfElement::loadInheritElements()
-{
-    //for (const QString &name : m_inherit) {
-    //    ConfElement *e = pack->getElementByName(name);
-    //    if (e && !m_inheritList.contains(e))
-    //        m_inheritList.append(e);
-    //}
+    parsePoints(secPoints);
 }
 
 void ConfElement::parseAbout(const QStringList &list)
@@ -135,6 +128,11 @@ void ConfElement::parseTypes(const QStringList &list)
             m_class = ElementClassString.value(sec1);
         } else if (sec0 == QLatin1String("inherit")) {
             m_inherit = sec1.split(QLatin1Char(','), QString::SkipEmptyParts);
+            for (const QString &name : m_inherit) {
+                ConfElement *e = parent()->getElementByName(name);
+                if (e && !m_inheritList.contains(e))
+                    m_inheritList.append(e);
+            }
         } else if (sec0 == QLatin1String("sub")) {
             m_sub = sec1;
         } else if (sec0 == QLatin1String("info")) {
@@ -445,4 +443,11 @@ void ConfElement::parsePoints(const QStringList &list)
     }
 }
 
+bool ConfElement::load()
+{
+    if (!m_loaded) {
+        loadConf();
+    }
 
+    return true;
+}

@@ -26,11 +26,9 @@ private:
     QString m_pathConf;
     QString m_name;
     bool m_isSuccess = false;
+    bool m_loaded = false;
 
     //QIcon m_icon;
-
-    //Inherited
-    bool m_isInherited = false;
 
     //About
     QString m_version;
@@ -66,8 +64,8 @@ public:
 
 private:
     void initConfElement();
-    void loadConf();
     void loadInheritElements();
+    void loadConf();
     void parseAbout(const QStringList &list);
     void parseTypes(const QStringList &list);
     void parsePropValue(const QString &sline, SharedPropConf conf);
@@ -75,6 +73,7 @@ private:
     void parsePoints(const QStringList &list);
 
 public:
+    bool load();
     QString getName() const { return m_name; }
     Package *parent() { return qobject_cast<Package *>(QObject::parent()); }
     bool isSuccess() const { return m_isSuccess; }

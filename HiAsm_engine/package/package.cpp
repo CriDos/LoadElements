@@ -189,30 +189,41 @@ bool Package::loadElements()
     elementsPath.setFilter(QDir::Files);
     QFileInfoList listElements = elementsPath.entryInfoList();
 
-    if (listElements.empty()) {
-        qWarning() << "Элементы отсутствуют!";
-        qWarning() << elementsPath.path();
-
-        return false;
-    }
-
     for (const QFileInfo &element : listElements) {
         ConfElement *e = new ConfElement(element.filePath(), this);
-        if (e->isSuccess()) {
-            m_confElementList << e;
-        }
+        if (e->load()) {
+            m_confElementMap.insert(e->getName(), e);
+        } else
+            return false;
     }
 
     return true;
 }
 
-ConfElement *Package::getElementByName(const QString &name)
+ConfElement *Package::loadElement(const QString &name)
 {
-    for (ConfElement *conf : m_confElementList) {
-        if (QString::compare(conf->getName(), name, Qt::CaseInsensitive) == 0) {
-            return conf;
+    QString elementConfPath = m_confPath + QDir::separator() + name + ".ini";
+    if (contains(name))
+        return m_confElementMap[name];
+    else {
+        ConfElement *e = new ConfElement(elementConfPath, this);
+        if (e->load()) {
+            m_confElementMap.insert(e->getName(), e);
+            return e;
         }
     }
+    return nullptr;
+}
+
+bool Package::contains(const QString &name)
+{
+    return m_confElementMap.contains(name);
+}
+
+ConfElement *Package::getElementByName(const QString &name)
+{
+    if (contains(name))
+        return m_confElementMap[name];
 
     return nullptr;
 }

@@ -9,6 +9,7 @@
 #include <QVariant>
 
 typedef QVector<class ConfElement *> ConfElementList;
+typedef QMap<QString, class ConfElement *> ConfElementMap;
 
 struct ArrayItem {
     QString name;

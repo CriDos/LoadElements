@@ -38,7 +38,7 @@ private:
     ProjectList m_projectList; //Массив проектов
 
     //Elements
-    ConfElementList m_confElementList; //Массив элементов
+    ConfElementMap m_confElementMap; //Массив элементов
 
 public:
     explicit Package(const QString &packagePath, QObject *parent = 0);
@@ -49,5 +49,7 @@ private:
 
 public:
     bool isSuccess() const { return m_isSuccess; }
+    ConfElement *loadElement(const QString &name);
+    bool contains(const QString &name);
     ConfElement *getElementByName(const QString &name);
 };
