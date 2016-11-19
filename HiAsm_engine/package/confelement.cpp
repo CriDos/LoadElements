@@ -94,8 +94,18 @@ void ConfElement::loadConf()
 
     parseAbout(secAbouts);
     parseTypes(secTypes);
-    parseProperties(secProperties);
     parsePoints(secPoints);
+    parseProperties(secProperties);
+
+}
+
+void ConfElement::loadInheritElements()
+{
+    //for (const QString &name : m_inherit) {
+    //    ConfElement *e = pack->getElementByName(name);
+    //    if (e && !m_inheritList.contains(e))
+    //        m_inheritList.append(e);
+    //}
 }
 
 void ConfElement::parseAbout(const QStringList &list)
@@ -435,11 +445,4 @@ void ConfElement::parsePoints(const QStringList &list)
     }
 }
 
-void ConfElement::addInheritElements(Package *pack)
-{
-    for (const QString &name : m_inherit) {
-        ConfElement *e = pack->getElementByName(name);
-        if (e && !m_inheritList.contains(e))
-            m_inheritList.append(e);
-    }
-}
+

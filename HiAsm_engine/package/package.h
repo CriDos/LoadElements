@@ -2,7 +2,6 @@
 
 //Project
 #include "core/types.h"
-#include "confelement.h"
 
 //STL
 
@@ -47,7 +46,6 @@ public:
 private:
     bool loadPackageInfo();
     bool loadElements();
-    void addInheritElements();
 
 public:
     bool isSuccess() const { return m_isSuccess; }

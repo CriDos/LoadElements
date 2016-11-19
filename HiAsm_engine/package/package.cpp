@@ -1,5 +1,6 @@
 //Project
 #include "package.h"
+#include "confelement.h"
 
 //STL
 
@@ -38,7 +39,6 @@ Package::Package(const QString &packagePath, QObject *parent)
     }
 
     //Добавляем информацию из наследуемых элементов
-    addInheritElements();
     m_isSuccess = true;
 }
 
@@ -204,13 +204,6 @@ bool Package::loadElements()
     }
 
     return true;
-}
-
-void Package::addInheritElements()
-{
-    for (ConfElement *conf : m_confElementList) {
-        conf->addInheritElements(this);
-    }
 }
 
 ConfElement *Package::getElementByName(const QString &name)

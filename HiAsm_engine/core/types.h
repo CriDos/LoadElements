@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QVariant>
 
+typedef QVector<class ConfElement *> ConfElementList;
+
 struct ArrayItem {
     QString name;
     QVariant data;

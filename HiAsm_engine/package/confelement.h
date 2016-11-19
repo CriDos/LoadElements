@@ -9,8 +9,6 @@
 //Qt
 #include <QtCore>
 
-typedef QVector<class ConfElement *> ConfElementList;
-
 class ConfElement : public QObject
 {
 private:
@@ -69,6 +67,7 @@ public:
 private:
     void initConfElement();
     void loadConf();
+    void loadInheritElements();
     void parseAbout(const QStringList &list);
     void parseTypes(const QStringList &list);
     void parsePropValue(const QString &sline, SharedPropConf conf);
@@ -77,8 +76,7 @@ private:
 
 public:
     QString getName() const { return m_name; }
-
-    //Inherits
-    void addInheritElements(Package *pack);
+    Package *parent() { return qobject_cast<Package *>(QObject::parent()); }
     bool isSuccess() const { return m_isSuccess; }
+
 };
