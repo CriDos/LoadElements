@@ -9,8 +9,7 @@
 //Qt
 #include <QtCore>
 
-class ConfElement;
-typedef QVector<ConfElement *> ConfElementList;
+typedef QVector<class ConfElement *> ConfElementList;
 
 class ConfElement : public QObject
 {

@@ -114,7 +114,6 @@ struct PropConf { //-V802
 };
 typedef QSharedPointer<PropConf> SharedPropConf;
 typedef QList<SharedPropConf> PropConfList;
-
 typedef QMap<QString, QString> MapPropGroup;
 
 struct ProjectInfo {
@@ -136,6 +135,4 @@ struct CompilerInfo {
 };
 typedef QSharedPointer<CompilerInfo> SharedCompilerInfo;
 typedef QList<SharedCompilerInfo> CompilerList;
-
-class Package;
-typedef QMap<QString, Package *> Packages;
+typedef QMap<QString, class Package *> Packages;
