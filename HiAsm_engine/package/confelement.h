@@ -11,7 +11,7 @@
 
 class ConfElement : public QObject
 {
-private:
+public:
     enum TypeSection {
         ts_undefine,
         ts_abouts,
@@ -77,5 +77,4 @@ public:
     QString getName() const { return m_name; }
     Package *parent() { return qobject_cast<Package *>(QObject::parent()); }
     bool isSuccess() const { return m_isSuccess; }
-
 };
