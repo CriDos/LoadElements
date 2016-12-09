@@ -23,7 +23,7 @@ public:
 
 private:
     //Self
-    QString m_pathConf;
+    QString m_confPath;
     QString m_name;
     bool m_isSuccess = false;
     bool m_loaded = false;

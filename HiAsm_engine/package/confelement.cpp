@@ -12,9 +12,9 @@
 
 ConfElement::ConfElement(const QString &pathConf, QObject *parent)
     : QObject(parent)
-    , m_pathConf(pathConf)
+    , m_confPath(pathConf)
 {
-    QFileInfo file(m_pathConf);
+    QFileInfo file(m_confPath);
     m_name = file.baseName();
 }
 
@@ -29,7 +29,7 @@ void ConfElement::loadInheritElements()
 
 void ConfElement::loadConf()
 {
-    QFile file(m_pathConf);
+    QFile file(m_confPath);
     file.open(QIODevice::ReadOnly);
     const QString data = QString::fromLocal8Bit(file.readAll());
     file.close();
@@ -88,7 +88,7 @@ void ConfElement::loadConf()
             break;
         default: {
             qWarning(qUtf8Printable("При загрузке конфигурации элемента, найден неизвестный параметр."));
-            qWarning("Файл: \"%s\"", qUtf8Printable(m_pathConf));
+            qWarning("Файл: \"%s\"", qUtf8Printable(m_confPath));
             qWarning("Параметр: \"%s\"", qUtf8Printable(line));
             break;
         }
