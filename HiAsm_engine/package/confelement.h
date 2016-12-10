@@ -37,7 +37,6 @@ private:
 
     //Type
     ElementClass m_class;
-    QStringList m_inherit;
     ConfElementList m_inheritList;
     QString m_sub;
     QString m_info;
@@ -60,11 +59,9 @@ private:
     PointConfList m_hiddenPointList;
 
 public:
-    explicit ConfElement(const QString &pathConf, QObject *parent);
+    explicit ConfElement(const QFileInfo &elInfo, QObject *parent);
 
 private:
-    void initConfElement();
-    void loadInheritElements();
     void loadConf();
     void parseAbout(const QStringList &list);
     void parseTypes(const QStringList &list);

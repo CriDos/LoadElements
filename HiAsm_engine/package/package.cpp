@@ -189,11 +189,14 @@ bool Package::loadElements()
     elementsPath.setFilter(QDir::Files);
     QFileInfoList listElements = elementsPath.entryInfoList();
 
-    for (const QFileInfo &element : listElements) {
-        ConfElement *e = new ConfElement(element.filePath(), this);
-        if (e->load()) {
+    for (const QFileInfo &elInfo : listElements) {
+        if (m_confElementMap.contains(elInfo.baseName()))
+            continue;
+
+        ConfElement *e = new ConfElement(elInfo, this);
+        if (e->load())
             m_confElementMap.insert(e->getName(), e);
-        } else
+        else
             return false;
     }
 

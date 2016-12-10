@@ -10,21 +10,11 @@
 
 //Qt
 
-ConfElement::ConfElement(const QString &pathConf, QObject *parent)
+ConfElement::ConfElement(const QFileInfo &elInfo, QObject *parent)
     : QObject(parent)
-    , m_confPath(pathConf)
 {
-    QFileInfo file(m_confPath);
-    m_name = file.baseName();
-}
-
-void ConfElement::loadInheritElements()
-{
-    //for (const QString &name : m_inherit) {
-    //    ConfElement *e = pack->getElementByName(name);
-    //    if (e && !m_inheritList.contains(e))
-    //        m_inheritList.append(e);
-    //}
+    m_confPath = elInfo.absoluteFilePath();
+    m_name = elInfo.baseName();
 }
 
 void ConfElement::loadConf()
@@ -99,6 +89,8 @@ void ConfElement::loadConf()
     parseTypes(secTypes);
     parseProperties(secProperties);
     parsePoints(secPoints);
+
+    m_isSuccess = true;
 }
 
 void ConfElement::parseAbout(const QStringList &list)
@@ -121,16 +113,21 @@ void ConfElement::parseAbout(const QStringList &list)
 
 void ConfElement::parseTypes(const QStringList &list)
 {
+    Package *pack = parent();
     for (const QString &line : list) {
         QString sec0 = line.section("=", 0, 0).toLower();
         QString sec1 = line.section("=", 1, 1);
         if (sec0 == QLatin1String("class")) {
             m_class = ElementClassString.value(sec1);
         } else if (sec0 == QLatin1String("inherit")) {
-            m_inherit = sec1.split(QLatin1Char(','), QString::SkipEmptyParts);
-            for (const QString &name : m_inherit) {
-                ConfElement *e = parent()->getElementByName(name);
-                if (e && !m_inheritList.contains(e))
+            QStringList inheritList = sec1.split(QLatin1Char(','), QString::SkipEmptyParts);
+            for (const QString &name : inheritList) {
+                ConfElement *e = nullptr;
+                if (!pack->contains(name))
+                    e = pack->loadElement(name);
+                else
+                    e = pack->getElementByName(name);
+                if (e->isSuccess() && !m_inheritList.contains(e))
                     m_inheritList.append(e);
             }
         } else if (sec0 == QLatin1String("sub")) {
