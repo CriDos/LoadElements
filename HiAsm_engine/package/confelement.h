@@ -68,7 +68,7 @@ private:
     void parseProperties(const QStringList &list);
     void parsePoints(const QStringList &list);
     SharedPropConf parseProp(const QString &sline, const SharedPropConf &inheritPropConf);
-    void loadInherit(const QString &sec);
+    void loadInheritElements(const QString &sec);
     SharedPropConf findInheritProp(const QString &name) const;
 
 public:
@@ -78,4 +78,5 @@ public:
     bool isSuccess() const { return m_isSuccess; }
     SharedPropConf getPropByName(const QString &name) const;
     bool containsProp(const QString &name) const;
+    PropConfList propList() const;
 };
