@@ -225,8 +225,8 @@ void ConfElement::parseProperties(const QStringList &list)
             }
 
             if (c == QLatin1Char('|')) {
-                const SharedPropConf inheritProp = findInheritProp(name);
-                SharedPropConf propConf = parsePropValue(line.right(outIndex - i - 1), inheritProp);
+                const SharedConfProp inheritProp = findInheritProp(name);
+                SharedConfProp propConf = parsePropValue(line.right(outIndex - i - 1), inheritProp);
                 propConf->name = name;
                 propConf->activated = activated;
                 propConf->makePoint = makePoint;
@@ -267,7 +267,7 @@ void ConfElement::parsePoints(const QStringList &list)
         const int outIndex = line.size();
         for (int i = 0; i <= outIndex; ++i) {
             if (i == outIndex) {
-                SharedPointConf point = SharedPointConf::create();
+                SharedConfPoint point = SharedConfPoint::create();
                 point->name = name;
                 point->desc = desc;
                 point->pointType = PointType(pointType.toInt());
@@ -323,11 +323,11 @@ void ConfElement::parsePoints(const QStringList &list)
     }
 }
 
-SharedPropConf ConfElement::parsePropValue(const QString &sline, const SharedPropConf &inheritPropConf)
+SharedConfProp ConfElement::parsePropValue(const QString &sline, const SharedConfProp &inheritPropConf)
 {
     const QString notImplemented = QString("Загрузка свойств с типом %1 не реализована.");
-    SharedPropConf propConf = SharedPropConf::create();
-    Value &value = propConf->value;
+    SharedConfProp propConf = SharedConfProp::create();
+    ConfValue &value = propConf->value;
 
     if (sline.isEmpty())
         return propConf;
@@ -341,7 +341,7 @@ SharedPropConf ConfElement::parsePropValue(const QString &sline, const SharedPro
     if (typeValue.isEmpty() || typeValue == QLatin1String(" ")) {
         for (const ConfElement *elConf : m_inheritList) {
             if (elConf->containsProp(propConf->name)) {
-                const SharedPropConf &prop = elConf->getPropByName(propConf->name);
+                const SharedConfProp &prop = elConf->getPropByName(propConf->name);
                 type = prop->type;
             } else
                 type = DataType(list[0].toInt());
@@ -397,7 +397,7 @@ SharedPropConf ConfElement::parsePropValue(const QString &sline, const SharedPro
     }
 
     case data_font: {
-        auto font = SharedValueFont::create();
+        auto font = SharedConfValueFont::create();
         if (list.isEmpty()) {
             font->name = "MS Sans Serif";
             font->size = 8;
@@ -476,7 +476,7 @@ void ConfElement::loadInheritElements(const QString &sec)
     }
 }
 
-SharedPropConf ConfElement::findInheritProp(const QString &name) const
+SharedConfProp ConfElement::findInheritProp(const QString &name) const
 {
     for (const ConfElement *i : m_inheritList) {
         if (i->containsProp(name)) {
@@ -484,23 +484,23 @@ SharedPropConf ConfElement::findInheritProp(const QString &name) const
         }
     }
 
-    return SharedPropConf();
+    return SharedConfProp();
 }
 
-SharedPropConf ConfElement::getPropByName(const QString &name) const
+SharedConfProp ConfElement::getPropByName(const QString &name) const
 {
-    for (const SharedPropConf &prop : m_propList) {
+    for (const SharedConfProp &prop : m_propList) {
         if (prop->name == name) {
             return prop;
         }
     }
 
-    return SharedPropConf();
+    return SharedConfProp();
 }
 
 bool ConfElement::containsProp(const QString &name) const
 {
-    for (const SharedPropConf &prop : m_propList) {
+    for (const SharedConfProp &prop : m_propList) {
         if (prop->name == name) {
             return true;
         }
@@ -508,7 +508,7 @@ bool ConfElement::containsProp(const QString &name) const
     return false;
 }
 
-PropConfList ConfElement::propList() const
+ConfPropList ConfElement::propList() const
 {
     return m_propList;
 }

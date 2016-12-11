@@ -49,14 +49,14 @@ private:
     QString m_editClass;
 
     //Group
-    MapPropGroup m_group;
+    MapConfPropGroup m_group;
 
     //Properties
-    PropConfList m_propList;
+    ConfPropList m_propList;
 
     //Points
-    PointConfList m_pointList;
-    PointConfList m_hiddenPointList;
+    ConfPointList m_pointList;
+    ConfPointList m_hiddenPointList;
 
 public:
     explicit ConfElement(const QFileInfo &elInfo, QObject *parent);
@@ -67,16 +67,16 @@ private:
     void parseTypes(const QStringList &list);
     void parseProperties(const QStringList &list);
     void parsePoints(const QStringList &list);
-    SharedPropConf parseProp(const QString &sline, const SharedPropConf &inheritPropConf);
+    SharedConfProp parsePropValue(const QString &sline, const SharedConfProp &inheritPropConf);
     void loadInheritElements(const QString &sec);
-    SharedPropConf findInheritProp(const QString &name) const;
+    SharedConfProp findInheritProp(const QString &name) const;
 
 public:
     bool load();
     QString getName() const { return m_name; }
     Package *parent() { return qobject_cast<Package *>(QObject::parent()); }
     bool isSuccess() const { return m_isSuccess; }
-    SharedPropConf getPropByName(const QString &name) const;
+    SharedConfProp getPropByName(const QString &name) const;
     bool containsProp(const QString &name) const;
-    PropConfList propList() const;
+    ConfPropList propList() const;
 };

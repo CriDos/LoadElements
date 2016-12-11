@@ -11,20 +11,20 @@
 typedef QVector<class ConfElement *> ConfElementList;
 typedef QMap<QString, class ConfElement *> ConfElementMap;
 
-struct ArrayItem {
+struct ConfArrayItem {
     QString name;
     QVariant data;
 };
-typedef QSharedPointer<ArrayItem> SharedArrayItem;
-Q_DECLARE_METATYPE(SharedArrayItem)
+typedef QSharedPointer<ConfArrayItem> SharedConfArrayItem;
+Q_DECLARE_METATYPE(SharedConfArrayItem)
 
-class ArrayValue : public QList<SharedArrayItem>
+class ConfArrayValue : public QList<SharedConfArrayItem>
 {
 private:
     DataType m_type = data_null;
 
 public:
-    explicit ArrayValue(DataType type)
+    explicit ConfArrayValue(DataType type)
         : m_type(type)
     {
     }
@@ -32,17 +32,17 @@ public:
     DataType getType() const { return m_type; }
     void setType(DataType type) { m_type = type; }
 };
-typedef QSharedPointer<ArrayValue> SharedArrayValue;
-Q_DECLARE_METATYPE(SharedArrayValue)
+typedef QSharedPointer<ConfArrayValue> SharedConfArrayValue;
+Q_DECLARE_METATYPE(SharedConfArrayValue)
 
-struct LinkedElementInfo {
+struct ConfLinkedElementInfo {
     class Element *element{};
     QString interface;
 };
-typedef QSharedPointer<LinkedElementInfo> SharedLinkedElementInfo;
-Q_DECLARE_METATYPE(SharedLinkedElementInfo)
+typedef QSharedPointer<ConfLinkedElementInfo> SharedConfLinkedElementInfo;
+Q_DECLARE_METATYPE(SharedConfLinkedElementInfo)
 
-struct ValueFont { //-V802
+struct ConfValueFont { //-V802
     QString name;
     int size{};
     int color{};
@@ -50,10 +50,10 @@ struct ValueFont { //-V802
     uchar charset{};
 
 };
-typedef QSharedPointer<ValueFont> SharedValueFont;
-Q_DECLARE_METATYPE(SharedValueFont)
+typedef QSharedPointer<ConfValueFont> SharedConfValueFont;
+Q_DECLARE_METATYPE(SharedConfValueFont)
 
-class Value : public QVariant
+class ConfValue : public QVariant
 {
     //Self
     DataType m_type = data_null;
@@ -78,18 +78,18 @@ public:
     //Array
     DataType getTypeArrayItem() const;
     int getArraySize() const;
-    SharedArrayItem getArrayItemByIndex(int index) const;
+    SharedConfArrayItem getArrayItemByIndex(int index) const;
     QString getArrayItemName(int index) const;
 
     //Font
-    SharedValueFont toFont() const;
+    SharedConfValueFont toFont() const;
 
     //LinkedElementInfo
-    SharedLinkedElementInfo toLinkedElementInfo() const;
+    SharedConfLinkedElementInfo toLinkedElementInfo() const;
 };
 
 // Конфиг
-struct PointConf {
+struct ConfPoint {
     /// Название точки.
     /// %prop% - название свойства, значение которого будет использоваться в имени точки.
     QString name;
@@ -103,22 +103,22 @@ struct PointConf {
     /// Тип данных точки.
     DataType dataType;
 };
-typedef QSharedPointer<PointConf> SharedPointConf;
-typedef QList<SharedPointConf> PointConfList;
+typedef QSharedPointer<ConfPoint> SharedConfPoint;
+typedef QList<SharedConfPoint> ConfPointList;
 
-struct PropConf { //-V802
+struct ConfProp { //-V802
     QString name;
     QString desc;
-    Value value;
+    ConfValue value;
     int defLine{};
     QString group;
     DataType type{};
     bool makePoint = false;
     bool activated = false;
 };
-typedef QSharedPointer<PropConf> SharedPropConf;
-typedef QList<SharedPropConf> PropConfList;
-typedef QMap<QString, QString> MapPropGroup;
+typedef QSharedPointer<ConfProp> SharedConfProp;
+typedef QList<SharedConfProp> ConfPropList;
+typedef QMap<QString, QString> MapConfPropGroup;
 
 struct ProjectInfo {
     QString name;

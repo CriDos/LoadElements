@@ -6,17 +6,17 @@
 
 //Qt
 
-void Value::setType(DataType type)
+void ConfValue::setType(DataType type)
 {
     m_type = type;
 }
 
-DataType Value::getType() const
+DataType ConfValue::getType() const
 {
     return m_type;
 }
 
-uchar Value::toByte() const
+uchar ConfValue::toByte() const
 {
     if (!canConvert<uchar>())
         return uchar();
@@ -24,7 +24,7 @@ uchar Value::toByte() const
     return value<uchar>();
 }
 
-int Value::toInt() const
+int ConfValue::toInt() const
 {
     if (!canConvert<int>())
         return int();
@@ -32,7 +32,7 @@ int Value::toInt() const
     return value<int>();
 }
 
-qreal Value::toReal() const
+qreal ConfValue::toReal() const
 {
     if (!canConvert<qreal>())
         return qreal();
@@ -40,7 +40,7 @@ qreal Value::toReal() const
     return value<qreal>();
 }
 
-QString Value::toString() const
+QString ConfValue::toString() const
 {
     if (!canConvert<QString>())
         return QString();
@@ -48,55 +48,55 @@ QString Value::toString() const
     return value<QString>();
 }
 
-DataType Value::getTypeArrayItem() const
+DataType ConfValue::getTypeArrayItem() const
 {
-    if (!canConvert<SharedArrayValue>())
+    if (!canConvert<SharedConfArrayValue>())
         return data_null;
 
-    return value<SharedArrayValue>()->getType();
+    return value<SharedConfArrayValue>()->getType();
 }
 
-int Value::getArraySize() const
+int ConfValue::getArraySize() const
 {
-    if (!canConvert<SharedArrayValue>())
+    if (!canConvert<SharedConfArrayValue>())
         return -1;
 
-    return value<SharedArrayValue>()->size();
+    return value<SharedConfArrayValue>()->size();
 }
 
-SharedArrayItem Value::getArrayItemByIndex(int index) const
+SharedConfArrayItem ConfValue::getArrayItemByIndex(int index) const
 {
-    if (!canConvert<SharedArrayValue>())
-        return SharedArrayItem();
+    if (!canConvert<SharedConfArrayValue>())
+        return SharedConfArrayItem();
 
-    const SharedArrayValue &arrayValues = value<SharedArrayValue>();
+    const SharedConfArrayValue &arrayValues = value<SharedConfArrayValue>();
     if (index < arrayValues->size())
         return arrayValues->at(index);
 
-    return SharedArrayItem();
+    return SharedConfArrayItem();
 }
 
-QString Value::getArrayItemName(int index) const
+QString ConfValue::getArrayItemName(int index) const
 {
-    const SharedArrayItem arrItem = getArrayItemByIndex(index);
+    const SharedConfArrayItem arrItem = getArrayItemByIndex(index);
     if (!arrItem)
         return QString();
 
     return arrItem->name;
 }
 
-SharedValueFont Value::toFont() const
+SharedConfValueFont ConfValue::toFont() const
 {
-    if (!canConvert<SharedValueFont>())
-        return SharedValueFont();
+    if (!canConvert<SharedConfValueFont>())
+        return SharedConfValueFont();
 
-    return value<SharedValueFont>();
+    return value<SharedConfValueFont>();
 }
 
-SharedLinkedElementInfo Value::toLinkedElementInfo() const
+SharedConfLinkedElementInfo ConfValue::toLinkedElementInfo() const
 {
-    if (!canConvert<SharedLinkedElementInfo>())
-        return SharedLinkedElementInfo();
+    if (!canConvert<SharedConfLinkedElementInfo>())
+        return SharedConfLinkedElementInfo();
 
-    return value<SharedLinkedElementInfo>();
+    return value<SharedConfLinkedElementInfo>();
 }
