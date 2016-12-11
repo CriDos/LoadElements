@@ -1,6 +1,6 @@
 #pragma once
 //Project
-#include "core/types.h"
+#include "types.h"
 
 //STL
 

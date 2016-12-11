@@ -48,7 +48,6 @@ struct ConfValueFont { //-V802
     int color{};
     uchar style{};
     uchar charset{};
-
 };
 typedef QSharedPointer<ConfValueFont> SharedConfValueFont;
 Q_DECLARE_METATYPE(SharedConfValueFont)
