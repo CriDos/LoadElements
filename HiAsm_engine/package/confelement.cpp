@@ -146,123 +146,6 @@ void ConfElement::parseTypes(const QStringList &list)
     }
 }
 
-void ConfElement::parsePropValue(const QString &sline, SharedPropConf conf)
-{
-    const QString notImplemented = QString("Загрузка свойств с типом %1 не реализована.");
-    auto &value = conf->value;
-
-    if (sline.isEmpty())
-        return;
-
-    QStringList list = sline.split(QLatin1Char('|'));
-    if (list.isEmpty())
-        return;
-
-    const auto type = DataType(list[0].toInt());
-    conf->value.setType(type);
-    list.removeFirst();
-
-    switch (type) {
-    case data_null:
-        break;
-    case data_int: {
-        if (!list.isEmpty())
-            conf->value.setValue(list[0].toInt());
-        else
-            conf->value.setValue(0);
-        break;
-    }
-    case data_real: {
-        double dr = 0.0;
-        if (!list.isEmpty())
-            dr = list.first().toDouble();
-        conf->value.setValue(dr);
-        break;
-    }
-    case data_str: {
-        QString ds;
-        if (!list.isEmpty())
-            ds = list.first();
-        conf->value.setValue(ds);
-        break;
-    }
-    case data_combo:
-    case data_comboEx: {
-        if (list.size() < 2) {
-            qWarning() << "К-во параметров свойства меньше двух.";
-            break;
-        }
-        conf->defLine = list.first().toInt();
-        conf->value.setValue(list.last().split(','));
-        break;
-    }
-
-    case data_color: {
-        QString ds;
-        if (!list.isEmpty())
-            ds = list.first();
-        conf->value.setValue(ds);
-        break;
-    }
-
-    case data_font: {
-        auto font = SharedValueFont::create();
-        if (list.isEmpty()) {
-            font->name = "MS Sans Serif";
-            font->size = 8;
-            font->color = 0;
-            font->style = 0;
-            font->charset = 1;
-
-        } else {
-            QStringList fontParams = list[0].split(QLatin1Char(','));
-            if (fontParams.count() >= 5) {
-                font->name = fontParams[0].trimmed();
-                font->size = fontParams[1].toInt();
-                font->color = fontParams[2].toInt();
-                font->style = static_cast<uchar>(fontParams[3].toInt());
-                font->charset = static_cast<uchar>(fontParams[4].toInt());
-            }
-        }
-
-        value.setValue(font);
-        break;
-    }
-    case data_flags:
-        if (list.size() < 2) {
-            qWarning() << "К-во параметров свойства меньше двух.";
-            break;
-        }
-
-        conf->defLine = list[0].toInt();
-        conf->value.setValue(list[1].split(QLatin1Char(',')));
-        break;
-    case data_jpeg:
-    case data_icon:
-    case data_bitmap:
-    case data_stream:
-    case data_wave:
-    case data_array:
-    case data_list:
-    case data_data:
-        break;
-
-    case data_script:
-    case data_element:
-    //qInfo() << "test";
-    //break;
-    case data_matr:
-
-    case data_menu:
-
-    case data_code:
-
-    case data_object:
-        qWarning().noquote() << notImplemented.arg(DataTypeMap[type]);
-        //qWarning().noquote() << notImplemented.arg(DataTypeMap[_propType]);
-    }
-}
-
 void ConfElement::parseProperties(const QStringList &list)
 {
     //##имя_группы=описание
@@ -324,11 +207,6 @@ void ConfElement::parseProperties(const QStringList &list)
                 }
             }
 
-            if (c == QLatin1Char('=')) {
-                equalSign = true;
-                continue;
-            }
-
             if (countSharp == 2) {
                 if (!beginGroup) {
                     beginGroup = true;
@@ -345,13 +223,18 @@ void ConfElement::parseProperties(const QStringList &list)
                 continue;
             }
 
+            if (c == QLatin1Char('=')) {
+                equalSign = true;
+                continue;
+            }
+
             if (!equalSign)
                 name += c; //Имя свойства
             else
                 desc += c; //Описание свойства
 
             if (c == QLatin1Char('|')) {
-                parsePropValue(line.right(outIndex - i - 1), prop);
+                //parsePropValue(line.right(outIndex - i - 1), prop);
                 break;
             }
 
@@ -438,6 +321,144 @@ void ConfElement::parsePoints(const QStringList &list)
                 desc += c; //Описание точки
         }
     }
+}
+
+void ConfElement::parsePropValue(const QString &sline, SharedPropConf propConf)
+{
+    const QString notImplemented = QString("Загрузка свойств с типом %1 не реализована.");
+    Value &value = propConf->value;
+    const QString &name = propConf->name;
+
+    if (sline.isEmpty())
+        return;
+
+    QStringList list = sline.split(QLatin1Char('|'));
+    if (list.isEmpty())
+        return;
+
+    DataType type = data_null;
+    const QString &typeValue = list[0];
+    if (typeValue.isEmpty() || typeValue == QLatin1String(" ")) {
+        for (const ConfElement *elConf : m_inheritList) {
+            const SharedPropConf &prop = elConf->getPropByName("name");
+            type = prop->type;
+        }
+    }
+
+    type = DataType(list[0].toInt());
+    propConf->value.setType(type);
+    list.removeFirst();
+
+    switch (type) {
+    case data_null:
+        break;
+    case data_int: {
+        if (!list.isEmpty())
+            propConf->value.setValue(list[0].toInt());
+        else
+            propConf->value.setValue(0);
+        break;
+    }
+    case data_real: {
+        double dr = 0.0;
+        if (!list.isEmpty())
+            dr = list.first().toDouble();
+        propConf->value.setValue(dr);
+        break;
+    }
+    case data_str: {
+        QString ds;
+        if (!list.isEmpty())
+            ds = list.first();
+        propConf->value.setValue(ds);
+        break;
+    }
+    case data_combo:
+    case data_comboEx: {
+        if (list.size() < 2) {
+            qWarning() << "К-во параметров свойства меньше двух.";
+            break;
+        }
+        propConf->defLine = list.first().toInt();
+        propConf->value.setValue(list.last().split(','));
+        break;
+    }
+
+    case data_color: {
+        QString ds;
+        if (!list.isEmpty())
+            ds = list.first();
+        propConf->value.setValue(ds);
+        break;
+    }
+
+    case data_font: {
+        auto font = SharedValueFont::create();
+        if (list.isEmpty()) {
+            font->name = "MS Sans Serif";
+            font->size = 8;
+            font->color = 0;
+            font->style = 0;
+            font->charset = 1;
+
+        } else {
+            QStringList fontParams = list[0].split(QLatin1Char(','));
+            if (fontParams.count() >= 5) {
+                font->name = fontParams[0].trimmed();
+                font->size = fontParams[1].toInt();
+                font->color = fontParams[2].toInt();
+                font->style = static_cast<uchar>(fontParams[3].toInt());
+                font->charset = static_cast<uchar>(fontParams[4].toInt());
+            }
+        }
+
+        value.setValue(font);
+        break;
+    }
+    case data_flags:
+        if (list.size() < 2) {
+            qWarning() << "К-во параметров свойства меньше двух.";
+            break;
+        }
+
+        propConf->defLine = list[0].toInt();
+        propConf->value.setValue(list[1].split(QLatin1Char(',')));
+        break;
+    case data_jpeg:
+    case data_icon:
+    case data_bitmap:
+    case data_stream:
+    case data_wave:
+    case data_array:
+    case data_list:
+    case data_data:
+        break;
+
+    case data_script:
+    case data_element:
+    //qInfo() << "test";
+    //break;
+    case data_matr:
+
+    case data_menu:
+
+    case data_code:
+
+    case data_object:
+        qWarning().noquote() << notImplemented.arg(DataTypeMap[type]);
+        //qWarning().noquote() << notImplemented.arg(DataTypeMap[_propType]);
+    }
+}
+
+SharedPropConf ConfElement::getPropByName(const QString &name) const
+{
+    for (const SharedPropConf &prop : m_propList) {
+        if (prop->name == name) {
+            return prop;
+        }
+    }
+
+    return SharedPropConf::create();
 }
 
 bool ConfElement::load()
