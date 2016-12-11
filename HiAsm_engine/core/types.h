@@ -48,6 +48,7 @@ struct ValueFont { //-V802
     int color{};
     uchar style{};
     uchar charset{};
+
 };
 typedef QSharedPointer<ValueFont> SharedValueFont;
 Q_DECLARE_METATYPE(SharedValueFont)

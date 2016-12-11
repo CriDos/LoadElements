@@ -226,7 +226,7 @@ void ConfElement::parseProperties(const QStringList &list)
 
             if (c == QLatin1Char('|')) {
                 const SharedPropConf inheritProp = findInheritProp(name);
-                SharedPropConf propConf = parseProp(line.right(outIndex - i - 1), inheritProp);
+                SharedPropConf propConf = parsePropValue(line.right(outIndex - i - 1), inheritProp);
                 propConf->name = name;
                 propConf->activated = activated;
                 propConf->makePoint = makePoint;
@@ -323,7 +323,7 @@ void ConfElement::parsePoints(const QStringList &list)
     }
 }
 
-SharedPropConf ConfElement::parseProp(const QString &sline, const SharedPropConf &inheritPropConf)
+SharedPropConf ConfElement::parsePropValue(const QString &sline, const SharedPropConf &inheritPropConf)
 {
     const QString notImplemented = QString("Загрузка свойств с типом %1 не реализована.");
     SharedPropConf propConf = SharedPropConf::create();
@@ -471,7 +471,7 @@ void ConfElement::loadInheritElements(const QString &sec)
 
         if (e->isSuccess() && !m_inheritList.contains(e)) {
             m_inheritList.append(e);
-            e->propList();
+            // e->propList();
         }
     }
 }
