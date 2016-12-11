@@ -113,23 +113,13 @@ void ConfElement::parseAbout(const QStringList &list)
 
 void ConfElement::parseTypes(const QStringList &list)
 {
-    Package *pack = parent();
     for (const QString &line : list) {
         QString sec0 = line.section("=", 0, 0).toLower();
         QString sec1 = line.section("=", 1, 1);
         if (sec0 == QLatin1String("class")) {
             m_class = ElementClassString.value(sec1);
         } else if (sec0 == QLatin1String("inherit")) {
-            QStringList inheritList = sec1.split(QLatin1Char(','), QString::SkipEmptyParts);
-            for (const QString &name : inheritList) {
-                ConfElement *e = nullptr;
-                if (!pack->contains(name))
-                    e = pack->loadElement(name);
-                else
-                    e = pack->getElementByName(name);
-                if (e->isSuccess() && !m_inheritList.contains(e))
-                    m_inheritList.append(e);
-            }
+            loadInherit(sec1);
         } else if (sec0 == QLatin1String("sub")) {
             m_sub = sec1;
         } else if (sec0 == QLatin1String("info")) {
@@ -166,7 +156,6 @@ void ConfElement::parseProperties(const QStringList &list)
         //ConfProp
         QString name;
         QString desc;
-        SharedPropConf prop = SharedPropConf::create();
 
         //PropGroup
         QString descGroup;
@@ -214,6 +203,11 @@ void ConfElement::parseProperties(const QStringList &list)
                 }
             }
 
+            if (c == QLatin1Char('=')) {
+                equalSign = true;
+                continue;
+            }
+
             if (beginGroupLine) {
                 if (!equalSign)
                     nameGroup += c; //Имя группы
@@ -223,26 +217,28 @@ void ConfElement::parseProperties(const QStringList &list)
                 continue;
             }
 
-            if (c == QLatin1Char('=')) {
-                equalSign = true;
+            if (!equalSign) {
+                name += c; //Имя свойства
                 continue;
             }
 
-            if (!equalSign)
-                name += c; //Имя свойства
-            else
-                desc += c; //Описание свойства
-
             if (c == QLatin1Char('|')) {
-                //parsePropValue(line.right(outIndex - i - 1), prop);
+                const SharedPropConf inheritProp = findInheritProp(name);
+                SharedPropConf propConf = parseProp(line.right(outIndex - i - 1), inheritProp);
+                propConf->name = name;
+
+                if ((desc.isEmpty() || desc == QLatin1String(" ")) && !inheritProp.isNull())
+                    desc = inheritProp->desc;
+                propConf->desc = desc;
+
+                if (beginGroup)
+                    propConf->group = nameGroup;
+
+                m_propList << prop;
                 break;
             }
 
-            prop->name = name;
-            prop->desc = desc;
-            if (beginGroup)
-                prop->group = nameGroup;
-            m_propList << prop;
+            desc += c; //Описание свойства
         }
     }
 }
@@ -323,29 +319,33 @@ void ConfElement::parsePoints(const QStringList &list)
     }
 }
 
-void ConfElement::parsePropValue(const QString &sline, SharedPropConf propConf)
+SharedPropConf ConfElement::parseProp(const QString &sline, const SharedPropConf &inheritPropConf)
 {
     const QString notImplemented = QString("Загрузка свойств с типом %1 не реализована.");
-    Value &value = propConf->value;
-    const QString &name = propConf->name;
+    SharedPropConf prop = SharedPropConf::create();
+    Value &value = prop->value;
 
     if (sline.isEmpty())
-        return;
+        return prop;
 
     QStringList list = sline.split(QLatin1Char('|'));
     if (list.isEmpty())
-        return;
+        return prop;
 
     DataType type = data_null;
     const QString &typeValue = list[0];
     if (typeValue.isEmpty() || typeValue == QLatin1String(" ")) {
         for (const ConfElement *elConf : m_inheritList) {
-            const SharedPropConf &prop = elConf->getPropByName("name");
-            type = prop->type;
+            if (elConf->containsProp(propConf->name)) {
+                const SharedPropConf &prop = elConf->getPropByName(propConf->name);
+                type = prop->type;
+            } else
+                type = DataType(list[0].toInt());
         }
+    } else {
+        type = DataType(list[0].toInt());
     }
 
-    type = DataType(list[0].toInt());
     propConf->value.setType(type);
     list.removeFirst();
 
@@ -450,6 +450,33 @@ void ConfElement::parsePropValue(const QString &sline, SharedPropConf propConf)
     }
 }
 
+void ConfElement::loadInherit(const QString &sec)
+{
+    m_inheritList.clear();
+    Package *pack = parent();
+    const QStringList inheritList = sec.split(QLatin1Char(','), QString::SkipEmptyParts);
+    for (const QString &name : inheritList) {
+        ConfElement *e = nullptr;
+        if (!pack->contains(name))
+            e = pack->loadElement(name);
+        else
+            e = pack->getElementByName(name);
+        if (e->isSuccess() && !m_inheritList.contains(e))
+            m_inheritList.append(e);
+    }
+}
+
+SharedPropConf ConfElement::findInheritProp(const QString &name) const
+{
+    for (const ConfElement *i : m_inheritList) {
+        if (i->containsProp(name)) {
+            return i->getPropByName(name);
+        }
+    }
+
+    return SharedPropConf();
+}
+
 SharedPropConf ConfElement::getPropByName(const QString &name) const
 {
     for (const SharedPropConf &prop : m_propList) {
@@ -458,7 +485,17 @@ SharedPropConf ConfElement::getPropByName(const QString &name) const
         }
     }
 
-    return SharedPropConf::create();
+    return SharedPropConf();
+}
+
+bool ConfElement::containsProp(const QString &name) const
+{
+    for (const SharedPropConf &prop : m_propList) {
+        if (prop->name == name) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ConfElement::load()

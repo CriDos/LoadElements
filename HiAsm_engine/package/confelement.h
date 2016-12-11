@@ -67,12 +67,15 @@ private:
     void parseTypes(const QStringList &list);
     void parseProperties(const QStringList &list);
     void parsePoints(const QStringList &list);
-    void parsePropValue(const QString &sline, SharedPropConf conf);
-    SharedPropConf getPropByName(const QString &name) const;
+    SharedPropConf parseProp(const QString &sline, const SharedPropConf &inheritPropConf);
+    void loadInherit(const QString &sec);
+    SharedPropConf findInheritProp(const QString &name) const;
 
 public:
     bool load();
     QString getName() const { return m_name; }
     Package *parent() { return qobject_cast<Package *>(QObject::parent()); }
     bool isSuccess() const { return m_isSuccess; }
+    SharedPropConf getPropByName(const QString &name) const;
+    bool containsProp(const QString &name) const;
 };
